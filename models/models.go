@@ -4,24 +4,23 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"column:username"`
-	Passhash string `gorm:"column:pashash"`
-	TODOs    []TODO
-	Tags     []Tag
+	Username string
+	Passhash string
+	TODOs    []TODO `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Tags     []Tag  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type TODO struct {
 	gorm.Model
 	Title       string
 	Description string
+	Done        bool
 	UserID      uint
-	// User        User  `gorm:"foreignKey:UserID,constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	Tags []Tag `gorm:"many2many:todo_tags;"`
+	Tags        []Tag `gorm:"many2many:todo_tags;"`
 }
 
 type Tag struct {
 	gorm.Model
 	Name   string
 	UserID uint
-	// User   User `gorm:"foreignKey:UserID,constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
