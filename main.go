@@ -15,6 +15,10 @@ func init() {
 func main() {
 	r := gin.Default()
 	r.GET("/api/users", ctrls.GetAllUsers)
+	r.GET("/api/users/:id", ctrls.GetUserById)
 	r.POST("/api/users", ctrls.CreateUser)
+	r.PUT("/api/users/:id", ctrls.UpdateUserById)
+	r.PATCH("/api/users/:id", ctrls.UpdateUserById)
+	r.DELETE("/api/users/:id", ctrls.DeleteUserById)
 	r.Run()
 }
