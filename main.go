@@ -1,6 +1,7 @@
 package main
 
 import (
+	"todo_api_gin/ctrls"
 	"todo_api_gin/inits"
 
 	"github.com/gin-gonic/gin"
@@ -13,10 +14,7 @@ func init() {
 
 func main() {
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	r.GET("/api/users", ctrls.GetAllUsers)
+	r.POST("/api/users", ctrls.CreateUser)
 	r.Run() // listen and serve on 0.0.0.0:8080
 }

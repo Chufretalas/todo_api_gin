@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Username string
+	Username string `gorm:"unique"`
 	Passhash string
 	TODOs    []TODO `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Tags     []Tag  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
