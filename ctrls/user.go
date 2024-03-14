@@ -1,11 +1,13 @@
 package ctrls
 
 import (
+	"errors"
 	"fmt"
 	"todo_api_gin/db"
 	"todo_api_gin/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func GetAllUsers(c *gin.Context) {
@@ -18,15 +20,15 @@ func GetAllUsers(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 
 	var body struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
+		Username string `json:"username" binding:"required"`
+		Password string `json:"password" binding:"required"`
 	}
 
-	err := c.BindJSON(&body)
+	err := c.ShouldBindJSON(&body)
 
 	if err != nil {
 		fmt.Println(err.Error())
-		c.AbortWithStatus(400)
+		c.AbortWithStatusJSON(400, gin.H{"error": "json body must contain non-empty 'username' and 'password' fields"})
 		return
 	}
 
@@ -35,9 +37,14 @@ func CreateUser(c *gin.Context) {
 
 	result := db.DB.Create(&user)
 
+	if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+		c.AbortWithStatusJSON(400, gin.H{"error": fmt.Sprintf("username '%v' is already taken", body.Username)})
+		return
+	}
+
 	if result.Error != nil {
 		fmt.Println(result.Error.Error())
-		c.Status(400)
+		c.AbortWithStatusJSON(500, gin.H{"error": "unkown error"})
 		return
 	}
 
