@@ -22,6 +22,7 @@ func main() {
 	r.DELETE("/api/users/:id", ctrls.DeleteUserById)
 
 	r.GET("/api/tags", ctrls.GetAllTags)
+	r.GET("/api/tags/:tag_id", ctrls.GetTagById)
 	r.POST("/api/tags", ctrls.CreateTag)
 	r.Run()
 }

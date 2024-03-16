@@ -78,3 +78,21 @@ func CreateTag(c *gin.Context) {
 
 	c.JSON(200, gin.H{"tag": tag})
 }
+
+// TODO: error if the current user id does not match the user_id of the tag
+func GetTagById(c *gin.Context) {
+
+	tagId := c.Param("tag_id")
+
+	var tag models.Tag
+
+	result := db.DB.First(&tag, "id = ?", tagId)
+
+	if result.Error != nil {
+		fmt.Println("aqui", result.Error.Error())
+		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
+		return
+	}
+
+	c.JSON(200, gin.H{"tag": tag})
+}
