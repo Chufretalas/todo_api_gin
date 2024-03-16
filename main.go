@@ -20,5 +20,8 @@ func main() {
 	r.PUT("/api/users/:id", ctrls.UpdateUserById)
 	r.PATCH("/api/users/:id", ctrls.UpdateUserById)
 	r.DELETE("/api/users/:id", ctrls.DeleteUserById)
+
+	r.GET("/api/tags", ctrls.GetAllTags)
+	r.POST("/api/tags", ctrls.CreateTag)
 	r.Run()
 }
