@@ -13,13 +13,14 @@ import (
 //TODO: only return data of that user, give an access denied (403) if someone tries to access someones elses stuff
 
 func GetAllTags(c *gin.Context) {
+
 	var tags []models.Tag
 
 	result := db.DB.Find(&tags)
 
 	if result.Error != nil {
 		fmt.Printf("result.Error: %v\n", result.Error.Error())
-		c.AbortWithStatusJSON(500, "unknown error")
+		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
 		return
 	}
 
@@ -49,7 +50,7 @@ func CreateTag(c *gin.Context) {
 
 	if result.Error != nil {
 		fmt.Printf("result.Error: %v\n", result.Error.Error())
-		c.AbortWithStatusJSON(500, "unknown error")
+		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
 		return
 	}
 	// =============== end finding the user ===============

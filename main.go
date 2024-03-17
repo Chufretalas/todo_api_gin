@@ -3,6 +3,7 @@ package main
 import (
 	"todo_api_gin/ctrls"
 	"todo_api_gin/inits"
+	"todo_api_gin/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,9 +15,13 @@ func init() {
 
 func main() {
 	r := gin.Default()
+
+	r.POST("/signup", ctrls.Signup)
+	r.POST("/login", ctrls.Login)
+	r.GET("/validate", middleware.RequireAuth, ctrls.Validate) // here RequireAuth is a middleware that we will be creating below. It protects the route
+
 	r.GET("/api/users", ctrls.GetAllUsers)
 	r.GET("/api/users/:id", ctrls.GetUserById)
-	r.POST("/api/users", ctrls.CreateUser)
 	r.PUT("/api/users/:id", ctrls.UpdateUserById)
 	r.PATCH("/api/users/:id", ctrls.UpdateUserById)
 	r.DELETE("/api/users/:id", ctrls.DeleteUserById)
