@@ -1,4 +1,4 @@
-package ctrls
+package admin_ctrls
 
 import (
 	"errors"
@@ -9,8 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-//TODO: hash the password in create and update
 
 func GetAllUsers(c *gin.Context) {
 	var users []models.User

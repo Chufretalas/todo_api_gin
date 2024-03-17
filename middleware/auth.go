@@ -19,13 +19,13 @@ import (
 func RequireAuth(c *gin.Context) {
 	tokenHeader := c.Request.Header.Get("Authorization")
 	if tokenHeader == "" {
-		c.AbortWithStatusJSON(403, gin.H{"error": "incorrectly formatted authorization header"})
+		c.AbortWithStatusJSON(401, gin.H{"error": "incorrectly formatted authorization header"})
 		return
 	}
 
 	split := strings.Split(tokenHeader, " ")
 	if len(split) != 2 {
-		c.AbortWithStatusJSON(403, gin.H{"error": "incorrectly formatted authorization header"})
+		c.AbortWithStatusJSON(401, gin.H{"error": "incorrectly formatted authorization header"})
 		return
 	}
 
@@ -46,7 +46,7 @@ func RequireAuth(c *gin.Context) {
 	result := db.DB.First(&user, "id = ?", userId)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		c.AbortWithStatusJSON(403, gin.H{"error": fmt.Sprintf("no user was found for id = %v", userId)})
+		c.AbortWithStatusJSON(401, gin.H{"error": fmt.Sprintf("no user was found for id = %v", userId)})
 		return
 	}
 
@@ -62,6 +62,6 @@ func RequireAuth(c *gin.Context) {
 	//Continue
 	c.Next()
 
-	c.AbortWithStatus(403)
+	c.AbortWithStatus(401)
 
 }

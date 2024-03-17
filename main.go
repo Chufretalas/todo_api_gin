@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"os"
+	"todo_api_gin/admin_ctrls"
 	"todo_api_gin/ctrls"
 	"todo_api_gin/inits"
 	"todo_api_gin/middleware"
@@ -8,9 +11,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var adminUser string
+var adminPass string
+
 func init() {
 	inits.InitEnv()
 	inits.InitDB()
+
+	adminUser = os.Getenv("ADMIN_USER")
+	adminPass = os.Getenv("ADMIN_PASS")
+
+	if adminUser == "" || adminPass == "" {
+		log.Fatal("please set up the ADMIN_USER and ADMIN_PASS environment variables")
+	}
 }
 
 func main() {
@@ -18,16 +31,27 @@ func main() {
 
 	r.POST("/signup", ctrls.Signup)
 	r.POST("/login", ctrls.Login)
-	r.GET("/validate", middleware.RequireAuth, ctrls.Validate) // here RequireAuth is a middleware that we will be creating below. It protects the route
+	r.GET("/validate", middleware.RequireAuth, ctrls.Validate)
 
-	r.GET("/api/users", ctrls.GetAllUsers)
-	r.GET("/api/users/:id", ctrls.GetUserById)
-	r.PUT("/api/users/:id", ctrls.UpdateUserById)
-	r.PATCH("/api/users/:id", ctrls.UpdateUserById)
-	r.DELETE("/api/users/:id", ctrls.DeleteUserById)
+	// the endpoints in admin have access to everything from all users
+	admin := r.Group("/admin", gin.BasicAuth(gin.Accounts{
+		adminUser: adminPass,
+	}))
 
-	r.GET("/api/tags", ctrls.GetAllTags)
-	r.GET("/api/tags/:tag_id", ctrls.GetTagById)
-	r.POST("/api/tags", ctrls.CreateTag)
+	admin.GET("/api/users", admin_ctrls.GetAllUsers)
+	admin.GET("/api/users/:id", admin_ctrls.GetUserById)
+	admin.PUT("/api/users/:id", admin_ctrls.UpdateUserById)
+	admin.PATCH("/api/users/:id", admin_ctrls.UpdateUserById)
+	admin.DELETE("/api/users/:id", admin_ctrls.DeleteUserById)
+
+	admin.GET("/api/tags", admin_ctrls.GetAllTags)
+	admin.GET("/api/tags/:tag_id", admin_ctrls.GetTagById)
+	admin.POST("/api/tags", admin_ctrls.CreateTag)
+
+	// the endpoints in logged have access only to things of that one user
+	logged := r.Group("/api", middleware.RequireAuth)
+
+	logged.GET("/tags", ctrls.GetAllTags)
+
 	r.Run()
 }
