@@ -47,6 +47,9 @@ func main() {
 	admin.GET("/api/tags", admin_ctrls.GetAllTags)
 	admin.GET("/api/tags/:tag_id", admin_ctrls.GetTagById)
 	admin.POST("/api/tags", admin_ctrls.CreateTag)
+	admin.PUT("/api/tags/:tag_id", admin_ctrls.UpdateTagById)
+	admin.PATCH("/api/tags/:tag_id", admin_ctrls.UpdateTagById)
+	admin.DELETE("/api/tags/:tag_id", admin_ctrls.DeleteTagById)
 
 	// the endpoints in logged have access only to things of that one user
 	logged := r.Group("/api", middleware.RequireAuth)

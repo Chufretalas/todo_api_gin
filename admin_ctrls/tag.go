@@ -93,3 +93,53 @@ func GetTagById(c *gin.Context) {
 
 	c.JSON(200, gin.H{"tag": tag})
 }
+
+func UpdateTagById(c *gin.Context) {
+
+	id := c.Param("tag_id")
+
+	var tag models.Tag
+
+	findResult := db.DB.First(&tag, "id = ?", id)
+
+	if errors.Is(findResult.Error, gorm.ErrRecordNotFound) {
+		c.AbortWithStatusJSON(400, fmt.Sprintf("no tag was found for id = %v", id))
+		return
+	}
+
+	var body struct {
+		Name string `json:"name"`
+	}
+
+	err := c.ShouldBindJSON(&body)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		c.AbortWithStatusJSON(400, gin.H{"error": "body must be valid json"})
+		return
+	}
+
+	updateResult := db.DB.Model(&tag).Updates(models.Tag{Name: body.Name})
+
+	if updateResult.Error != nil {
+		fmt.Printf("result.Error: %v\n", updateResult.Error.Error())
+		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
+		return
+	}
+
+	c.JSON(200, gin.H{"tag": tag})
+}
+
+func DeleteTagById(c *gin.Context) {
+	id := c.Param("tag_id")
+
+	result := db.DB.Delete(&models.Tag{}, "id = ?", id)
+
+	if result.Error != nil {
+		fmt.Printf("result.Error: %v\n", result.Error.Error())
+		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
+		return
+	}
+
+	c.Status(200)
+}
