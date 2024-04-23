@@ -55,6 +55,10 @@ func main() {
 	logged := r.Group("/api", middleware.RequireAuth)
 
 	logged.GET("/tags", ctrls.GetAllTags)
+	logged.POST("/tags", ctrls.CreateTag)
+
+	logged.GET("/todos", ctrls.GetAllTODOs)
+	logged.POST("/todos", ctrls.CreateTODO)
 
 	r.Run()
 }
