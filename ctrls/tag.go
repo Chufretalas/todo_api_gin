@@ -37,7 +37,7 @@ func CreateTag(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println(err.Error())
-		c.AbortWithStatusJSON(400, gin.H{"error": "json body must contain non-empty 'name' fields"})
+		c.AbortWithStatusJSON(400, gin.H{"error": "json body must contain non-empty 'name' field"})
 		return
 	}
 

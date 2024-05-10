@@ -2,6 +2,7 @@ package ctrls
 
 import (
 	"fmt"
+	"strings"
 	"todo_api_gin/db"
 	"todo_api_gin/models"
 
@@ -25,15 +26,30 @@ func GetAllTODOs(c *gin.Context) {
 	c.JSON(200, gin.H{"todos": todos})
 }
 
-// TODO: make this receive a body
 func CreateTODO(c *gin.Context) {
 
 	untyped_user, _ := c.Get("user")
 	user := untyped_user.(models.User)
 
+	var body struct {
+		Title       string `json:"title" binding:"required"`
+		Description string `json:"description"`
+		Tags        string `json:"tags"` // receives the id of the tags separated by whitespaces
+	}
+
+	err := c.ShouldBindJSON(&body)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		c.AbortWithStatusJSON(400, gin.H{"error": "json body must contain non-empty 'title' field"})
+		return
+	}
+
 	var tags []models.Tag
 
-	err := db.DB.Model(&user).Association("Tags").Find(&tags, []string{"4", "5"})
+	fmt.Println(strings.Split(body.Tags, " "))
+
+	err = db.DB.Model(&user).Association("Tags").Find(&tags, strings.Split(body.Tags, " "))
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -41,7 +57,7 @@ func CreateTODO(c *gin.Context) {
 		return
 	}
 
-	todo := models.TODO{Title: "Titulo", Description: "Descrição do todo"}
+	todo := models.TODO{Title: body.Title, Description: body.Description}
 
 	err = db.DB.Model(&user).Association("TODOs").Append(&todo)
 	if err != nil {
