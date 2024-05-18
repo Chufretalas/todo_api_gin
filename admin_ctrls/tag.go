@@ -86,7 +86,7 @@ func GetTagById(c *gin.Context) {
 	result := db.DB.First(&tag, "id = ?", tagId)
 
 	if result.Error != nil {
-		fmt.Println("aqui", result.Error.Error())
+		fmt.Println(result.Error.Error())
 		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
 		return
 	}

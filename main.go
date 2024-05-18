@@ -58,6 +58,7 @@ func main() {
 	logged.POST("/tags", ctrls.CreateTag)
 
 	logged.GET("/todos", ctrls.GetAllTODOs)
+	logged.GET("/todos/:todo_id", ctrls.GetTodoById)
 	logged.POST("/todos", ctrls.CreateTODO)
 
 	r.Run()
