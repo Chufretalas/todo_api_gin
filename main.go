@@ -34,28 +34,32 @@ func main() {
 	r.GET("/validate", middleware.RequireAuth, ctrls.Validate)
 
 	// the endpoints in admin have access to everything from all users
-	admin := r.Group("/admin", gin.BasicAuth(gin.Accounts{
+	admin := r.Group("/admin/api", gin.BasicAuth(gin.Accounts{
 		adminUser: adminPass,
 	}))
 
-	admin.GET("/api/users", admin_ctrls.GetAllUsers)
-	admin.GET("/api/users/:id", admin_ctrls.GetUserById)
-	admin.PUT("/api/users/:id", admin_ctrls.UpdateUserById)
-	admin.PATCH("/api/users/:id", admin_ctrls.UpdateUserById)
-	admin.DELETE("/api/users/:id", admin_ctrls.DeleteUserById)
+	admin.GET("/users", admin_ctrls.GetAllUsers)
+	admin.GET("/users/:id", admin_ctrls.GetUserById)
+	admin.PUT("/users/:id", admin_ctrls.UpdateUserById)
+	admin.PATCH("/users/:id", admin_ctrls.UpdateUserById)
+	admin.DELETE("/users/:id", admin_ctrls.DeleteUserById)
 
-	admin.GET("/api/tags", admin_ctrls.GetAllTags)
-	admin.GET("/api/tags/:tag_id", admin_ctrls.GetTagById)
-	admin.POST("/api/tags", admin_ctrls.CreateTag)
-	admin.PUT("/api/tags/:tag_id", admin_ctrls.UpdateTagById)
-	admin.PATCH("/api/tags/:tag_id", admin_ctrls.UpdateTagById)
-	admin.DELETE("/api/tags/:tag_id", admin_ctrls.DeleteTagById)
+	admin.GET("/tags", admin_ctrls.GetAllTags)
+	admin.GET("/tags/:tag_id", admin_ctrls.GetTagById)
+	admin.POST("/tags", admin_ctrls.CreateTag)
+	admin.PUT("/tags/:tag_id", admin_ctrls.UpdateTagById)
+	admin.PATCH("/tags/:tag_id", admin_ctrls.UpdateTagById)
+	admin.DELETE("/tags/:tag_id", admin_ctrls.DeleteTagById)
 
 	// the endpoints in logged have access only to things of that one user
 	logged := r.Group("/api", middleware.RequireAuth)
 
 	logged.GET("/tags", ctrls.GetAllTags)
+	logged.GET("/tags/:tag_id", ctrls.GetTagById)
 	logged.POST("/tags", ctrls.CreateTag)
+	logged.PUT("/tags/:tag_id", ctrls.UpdateTagById)
+	logged.PATCH("/tags/:tag_id", ctrls.UpdateTagById)
+	logged.DELETE("/tags/:tag_id", ctrls.DeleteTagById)
 
 	logged.GET("/todos", ctrls.GetAllTODOs)
 	logged.GET("/todos/:todo_id", ctrls.GetTodoById)

@@ -61,7 +61,4 @@ func RequireAuth(c *gin.Context) {
 
 	//Continue
 	c.Next()
-
-	c.AbortWithStatus(401)
-
 }

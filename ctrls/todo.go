@@ -1,11 +1,13 @@
 package ctrls
 
 import (
+	"errors"
 	"fmt"
 	"todo_api_gin/db"
 	"todo_api_gin/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func GetAllTODOs(c *gin.Context) {
@@ -28,19 +30,20 @@ func GetTodoById(c *gin.Context) {
 
 	id := c.Param("todo_id")
 
-	user, _ := c.Get("user")
+	untyped_user, _ := c.Get("user")
+	user := untyped_user.(models.User)
 
 	var todo models.TODO
 
-	err := db.DB.Model(&user).Preload("Tags").Association("TODOs").Find(&todo, id)
+	findResult := db.DB.Preload("Tags").First(&todo, `id = ? AND user_id = ?`, id, user.ID)
 
-	if todo.ID == 0 && id != "0" {
-		c.AbortWithStatusJSON(400, gin.H{"error": "This TODO does not exist or does not belong to this user"})
+	if errors.Is(findResult.Error, gorm.ErrRecordNotFound) {
+		c.AbortWithStatusJSON(400, fmt.Sprintf("no todo belonging to this user was found for id = %v", id))
 		return
 	}
 
-	if err != nil {
-		fmt.Println(err.Error())
+	if findResult.Error != nil {
+		fmt.Println(findResult.Error.Error())
 		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
 		return
 	}
