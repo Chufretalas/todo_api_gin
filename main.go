@@ -62,8 +62,9 @@ func main() {
 	logged.DELETE("/tags/:tag_id", ctrls.DeleteTagById)
 
 	logged.GET("/todos", ctrls.GetAllTODOs)
-	logged.GET("/todos/:todo_id", ctrls.GetTodoById)
+	logged.GET("/todos/:todo_id", ctrls.GetTODOById)
 	logged.POST("/todos", ctrls.CreateTODO)
+	logged.DELETE("/todos/:todo_id", ctrls.DeleteTODOById)
 
 	r.Run()
 }

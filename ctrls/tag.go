@@ -124,9 +124,16 @@ func DeleteTagById(c *gin.Context) {
 	untyped_user, _ := c.Get("user")
 	user := untyped_user.(models.User)
 
-	fmt.Println("chegou aqui")
+	var tag models.Tag
 
-	result := db.DB.Delete(&models.Tag{}, "id = ? AND user_id = ?", id, user.ID)
+	findResult := db.DB.First(&tag, `id = ? AND user_id = ?`, id, user.ID)
+
+	if errors.Is(findResult.Error, gorm.ErrRecordNotFound) {
+		c.AbortWithStatusJSON(400, fmt.Sprintf("no tag belonging to this user was found for id = %v", id))
+		return
+	}
+
+	result := db.DB.Delete(&tag)
 
 	if result.Error != nil {
 		fmt.Printf("result.Error: %v\n", result.Error.Error())
@@ -134,5 +141,5 @@ func DeleteTagById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"tags deleted": int(result.RowsAffected)})
+	c.JSON(200, gin.H{"deleted tag": tag})
 }
