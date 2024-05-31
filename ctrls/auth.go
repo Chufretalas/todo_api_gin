@@ -129,6 +129,6 @@ func Validate(c *gin.Context) {
 	// user.(models.User).Username    -->   to access specific data
 
 	c.JSON(200, gin.H{
-		"message": user,
+		"user": user,
 	})
 }

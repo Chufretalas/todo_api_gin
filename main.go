@@ -26,8 +26,13 @@ func init() {
 	}
 }
 
-func setupRouter() *gin.Engine {
-	r := gin.Default()
+func setupRouter(quiet bool) *gin.Engine {
+	r := gin.New()
+
+	if !quiet {
+		r.Use(gin.Logger())
+	}
+	r.Use(gin.Recovery())
 
 	r.POST("/signup", ctrls.Signup)
 	r.POST("/login", ctrls.Login)
@@ -70,6 +75,6 @@ func setupRouter() *gin.Engine {
 }
 
 func main() {
-	r := setupRouter()
+	r := setupRouter(false)
 	r.Run()
 }

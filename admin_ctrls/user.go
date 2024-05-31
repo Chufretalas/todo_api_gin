@@ -7,6 +7,7 @@ import (
 	"todo_api_gin/models"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -64,7 +65,17 @@ func UpdateUserById(c *gin.Context) {
 		return
 	}
 
-	updateResult := db.DB.Model(&user).Updates(models.User{Username: body.Username, Passhash: body.Password})
+	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		c.AbortWithStatusJSON(500, gin.H{
+			"error": "Failed to hash password.",
+		})
+		return
+	}
+
+	updateResult := db.DB.Model(&user).Updates(models.User{Username: body.Username, Passhash: string(hash)})
 
 	if updateResult.Error != nil {
 		fmt.Printf("result.Error: %v\n", updateResult.Error.Error())
@@ -79,7 +90,7 @@ func DeleteUserById(c *gin.Context) {
 
 	id := c.Param("id")
 
-	result := db.DB.Delete(&models.User{}, "id = ?", id)
+	result := db.DB.Unscoped().Delete(&models.User{}, "id = ?", id)
 
 	if result.Error != nil {
 		fmt.Printf("result.Error: %v\n", result.Error.Error())
