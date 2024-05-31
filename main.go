@@ -26,7 +26,7 @@ func init() {
 	}
 }
 
-func main() {
+func setupRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.POST("/signup", ctrls.Signup)
@@ -66,5 +66,10 @@ func main() {
 	logged.POST("/todos", ctrls.CreateTODO)
 	logged.DELETE("/todos/:todo_id", ctrls.DeleteTODOById)
 
+	return r
+}
+
+func main() {
+	r := setupRouter()
 	r.Run()
 }

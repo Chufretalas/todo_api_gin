@@ -89,7 +89,7 @@ func Login(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": "invalid or password",
+			"error": "invalid username or password",
 		})
 		return
 	}
