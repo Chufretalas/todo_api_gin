@@ -69,6 +69,8 @@ func setupRouter(quiet bool) *gin.Engine {
 	logged.GET("/todos", ctrls.GetAllTODOs)
 	logged.GET("/todos/:todo_id", ctrls.GetTODOById)
 	logged.POST("/todos", ctrls.CreateTODO)
+	logged.PUT("/todos/:todo_id", ctrls.UpdateTODObyId)
+	logged.PATCH("/todos/:todo_id", ctrls.UpdateTODObyId)
 	logged.DELETE("/todos/:todo_id", ctrls.DeleteTODOById)
 
 	return r

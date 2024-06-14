@@ -100,6 +100,65 @@ func CreateTODO(c *gin.Context) {
 
 }
 
+func UpdateTODObyId(c *gin.Context) {
+	id := c.Param("todo_id")
+
+	untyped_user, _ := c.Get("user")
+	user := untyped_user.(models.User)
+
+	var todo models.TODO
+
+	findResult := db.DB.Preload("Tags").First(&todo, `id = ? AND user_id = ?`, id, user.ID)
+
+	if errors.Is(findResult.Error, gorm.ErrRecordNotFound) {
+		c.AbortWithStatusJSON(400, fmt.Sprintf("no todo belonging to this user was found for id = %v", id))
+		return
+	}
+
+	var body struct {
+		Title       string   `json:"title"`
+		Description string   `json:"description"`
+		Tags        []string `json:"tags"`
+	}
+
+	err := c.ShouldBindJSON(&body)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		c.AbortWithStatusJSON(400, gin.H{"error": "body must be valid json"})
+		return
+	}
+
+	var tags []models.Tag
+
+	err = db.DB.Model(&user).Association("Tags").Find(&tags, body.Tags)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
+		return
+	}
+
+	fmt.Printf("tags: %v\n", tags)
+
+	updateResult := db.DB.Preload("Tags").Model(&todo).Updates(models.TODO{Title: body.Title, Description: body.Description})
+
+	if updateResult.Error != nil {
+		fmt.Printf("result.Error: %v\n", updateResult.Error.Error())
+		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
+		return
+	}
+
+	err = db.DB.Model(&todo).Association("Tags").Replace(&tags)
+	if err != nil {
+		fmt.Println(err.Error())
+		c.AbortWithStatusJSON(500, gin.H{"error": "unknown error"})
+		return
+	}
+
+	c.JSON(200, gin.H{"todo": todo})
+}
+
 func DeleteTODOById(c *gin.Context) {
 	id := c.Param("todo_id")
 
