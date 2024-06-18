@@ -56,6 +56,13 @@ func setupRouter(quiet bool) *gin.Engine {
 	admin.PATCH("/tags/:tag_id", admin_ctrls.UpdateTagById)
 	admin.DELETE("/tags/:tag_id", admin_ctrls.DeleteTagById)
 
+	admin.GET("/todos", admin_ctrls.GetAllTODOs)
+	admin.GET("/todos/:todo_id", admin_ctrls.GetTODOById)
+	admin.POST("/todos", admin_ctrls.CreateTODO)
+	admin.PUT("/todos/:todo_id", admin_ctrls.UpdateTODObyId)
+	admin.PATCH("/todos/:todo_id", admin_ctrls.UpdateTODObyId)
+	admin.DELETE("/todos/:todo_id", admin_ctrls.DeleteTODOById)
+
 	// the endpoints in logged have access only to things of that one user
 	logged := r.Group("/api", middleware.RequireAuth)
 

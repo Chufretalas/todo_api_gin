@@ -139,8 +139,6 @@ func UpdateTODObyId(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("tags: %v\n", tags)
-
 	updateResult := db.DB.Preload("Tags").Model(&todo).Updates(models.TODO{Title: body.Title, Description: body.Description})
 
 	if updateResult.Error != nil {
@@ -174,7 +172,7 @@ func DeleteTODOById(c *gin.Context) {
 		return
 	}
 
-	deleteResult := db.DB.Delete(&todo)
+	deleteResult := db.DB.Unscoped().Delete(&todo)
 
 	if deleteResult.Error != nil {
 		fmt.Printf("result.Error: %v\n", deleteResult.Error.Error())

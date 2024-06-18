@@ -133,7 +133,7 @@ func DeleteTagById(c *gin.Context) {
 		return
 	}
 
-	result := db.DB.Delete(&tag)
+	result := db.DB.Unscoped().Delete(&tag)
 
 	if result.Error != nil {
 		fmt.Printf("result.Error: %v\n", result.Error.Error())

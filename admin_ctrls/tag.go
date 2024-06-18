@@ -29,7 +29,7 @@ func GetAllTags(c *gin.Context) {
 func CreateTag(c *gin.Context) {
 
 	// =============== finding the user ===============
-	userId := c.Request.URL.Query().Get("user_id")
+	userId := c.Query("user_id")
 
 	if userId == "" {
 		c.AbortWithStatusJSON(400, gin.H{"error": "user_id must be passed by url parameter"})
@@ -133,7 +133,7 @@ func UpdateTagById(c *gin.Context) {
 func DeleteTagById(c *gin.Context) {
 	id := c.Param("tag_id")
 
-	result := db.DB.Delete(&models.Tag{}, "id = ?", id)
+	result := db.DB.Unscoped().Delete(&models.Tag{}, "id = ?", id)
 
 	if result.Error != nil {
 		fmt.Printf("result.Error: %v\n", result.Error.Error())
